@@ -21,6 +21,7 @@ USEMODULE += xtimer
 USEMODULE += periph_gpio_irq
 USEMODULE += printf_float
 USEMODULE += periph_uart
+USEMODULE += st7580
 
 
 include $(RIOTBASE)/Makefile.include

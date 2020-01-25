@@ -24,13 +24,12 @@
 #include "led.h"
 #include "board.h"
 #include "periph/gpio.h"
-#include "periph/uart.h"
 #include "periph/hwrng.h"
 #include "thread.h"
 #include "xtimer.h"
 #include "msg.h"
 
-#include "ST7580_Serial.h"
+#include "st7580.h"
 
 /* Private define ------------------------------------------------------------*/
 #define TRIG_BUF_SIZE   21

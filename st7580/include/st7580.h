@@ -36,8 +36,8 @@
 */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef ST7580_SERIAL_H
-#define ST7580_SERIAL_H
+#ifndef ST7580_H
+#define ST7580_H
 
 /* Includes ------------------------------------------------------------------*/
 

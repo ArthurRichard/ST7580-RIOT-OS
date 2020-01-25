@@ -35,7 +35,7 @@
 ******************************************************************************
 */
 
-#include "ST7580_Serial.h"
+#include "st7580.h"
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>

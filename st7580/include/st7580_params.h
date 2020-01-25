@@ -49,7 +49,7 @@
 
   /* Includes ------------------------------------------------------------------*/
 
-#include "ST7580_Serial.h"
+#include "st7580.h"
 
 #ifdef __cplusplus
 extern "C" {

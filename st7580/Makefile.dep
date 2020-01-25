@@ -1,0 +1,5 @@
+ifneq (,$(filter your_module,$(USEMODULE))) # if module in USEMODULE
+	USEMODULE += xtimer
+	USEMODULE += periph_gpio_irq
+	USEMODULE += periph_uart
+endif
