@@ -379,7 +379,7 @@ extern const uint8_t modem_config[1];
 
 void ST7580InitChannel(void);
 
-void ST7580InterfaceInit(void);
+void ST7580InterfaceInit(uart_t uart_handle, gpio_t reset, gpio_t t_req);
 int ST7580Reset(void);
 
 int ST7580MibWrite(uint8_t indexMib, const uint8_t* bufMib, uint8_t lenBuf);

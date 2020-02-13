@@ -97,6 +97,7 @@ static int ST7580SendFrame(ST7580Frame *frame);
  * @defgroup Serial_Private_Variables         Serial Private Variables
  * @{
  */
+static volatile uart_t PLM_UART;
 static volatile gpio_t PLM_GPIO_RESETN_PIN;
 static volatile gpio_t PLM_GPIO_T_REQ_PIN;
 
@@ -183,21 +184,22 @@ void ST7580InitChannel(void)
 * @param  None
 * @retval None
 */
-void ST7580InterfaceInit(void)
+void ST7580InterfaceInit(uart_t uart_handle, gpio_t reset, gpio_t t_req)
 {
 	ST7580Frame *rx_frame;
 	
 	ST7580InitChannel();
-
-	PLM_GPIO_RESETN_PIN = GPIO_PIN(PORT_A, 8);
-	PLM_GPIO_T_REQ_PIN = GPIO_PIN(PORT_A, 5);
+	
+	PLM_UART = uart_handle;
+	PLM_GPIO_RESETN_PIN = reset;
+	PLM_GPIO_T_REQ_PIN = t_req;
 
 	gpio_init(PLM_GPIO_RESETN_PIN, GPIO_OUT);
 	gpio_init(PLM_GPIO_T_REQ_PIN, GPIO_OUT);
 
 	gpio_set(PLM_GPIO_T_REQ_PIN);
-	uart_poweron(UART_DEV(1));
-	if(uart_init(UART_DEV(1), 57600, NucleoST7580RxInt, NULL) != UART_OK)	printf("ST7580: UART INIT ERROR");
+	uart_poweron(PLM_UART);
+	if(uart_init(PLM_UART, 57600, NucleoST7580RxInt, NULL) != UART_OK)	printf("ST7580: UART INIT ERROR");
 
 	/*HAL_GPIO_WritePin(PLM_GPIO_RESETN_PORT,PLM_GPIO_RESETN_PIN,GPIO_PIN_RESET);
   	HAL_Delay(1500);
@@ -1033,7 +1035,7 @@ void NucleoST7580TxInt(void)
 	{
 		//LL_USART_TransmitData8(UartHandle->Instance, ch.ack_tx_value);
 		uart_data[0] = ch.ack_tx_value;
-		uart_write(UART_DEV(1), uart_data, 1);
+		uart_write(PLM_UART, uart_data, 1);
 		step = TX_DONE;
 	}
 	/* Switch on tx status */
@@ -1043,7 +1045,7 @@ void NucleoST7580TxInt(void)
 		case SEND_STX:
 			//LL_USART_TransmitData8(UartHandle->Instance, ch.tx_frame.stx);
 			uart_data[0] = ch.tx_frame.stx;
-			uart_write(UART_DEV(1), uart_data, 1);
+			uart_write(PLM_UART, uart_data, 1);
 			step = SEND_LENGTH;
 			break;
 
@@ -1053,7 +1055,7 @@ void NucleoST7580TxInt(void)
 			//LL_USART_TransmitData8(UartHandle->Instance, ch.tx_frame.length);
 			gpio_set(PLM_GPIO_T_REQ_PIN);
 			uart_data[0] = ch.tx_frame.length;
-			uart_write(UART_DEV(1), uart_data, 1);
+			uart_write(PLM_UART, uart_data, 1);
 			step = SEND_COMMAND;
 			break;
 
@@ -1061,7 +1063,7 @@ void NucleoST7580TxInt(void)
 		case SEND_COMMAND:
 			//LL_USART_TransmitData8(UartHandle->Instance, ch.tx_frame.command);
 			uart_data[0] = ch.tx_frame.command;
-			uart_write(UART_DEV(1), uart_data, 1);
+			uart_write(PLM_UART, uart_data, 1);
 			step = SEND_DATA;
 			break;
 
@@ -1075,7 +1077,7 @@ void NucleoST7580TxInt(void)
 			{
 				//LL_USART_TransmitData8(UartHandle->Instance, ch.tx_frame.data[i++]);
 				uart_data[0] = ch.tx_frame.data[i++];
-				uart_write(UART_DEV(1), uart_data, 1);
+				uart_write(PLM_UART, uart_data, 1);
 			}
 			break;
 
@@ -1083,7 +1085,7 @@ void NucleoST7580TxInt(void)
 		case SEND_CHECKSUM_LSB:
 			//LL_USART_TransmitData8(UartHandle->Instance, ch.tx_frame.checksum);
 			uart_data[0] = ch.tx_frame.checksum;
-			uart_write(UART_DEV(1), uart_data, 1);
+			uart_write(PLM_UART, uart_data, 1);
 			step = SEND_CHECKSUM_MSB;
 			break;
 
@@ -1091,7 +1093,7 @@ void NucleoST7580TxInt(void)
 		case SEND_CHECKSUM_MSB:
 			//LL_USART_TransmitData8(UartHandle->Instance, ch.tx_frame.checksum >> 8);
 			uart_data[0] = ch.tx_frame.checksum >> 8;
-			uart_write(UART_DEV(1), uart_data, 1);
+			uart_write(PLM_UART, uart_data, 1);
 			step = TX_DONE;
 			break;
 

@@ -24,12 +24,12 @@
 #include "led.h"
 #include "board.h"
 #include "periph/gpio.h"
+#include "periph/uart.h"
 #include "periph/hwrng.h"
 #include "thread.h"
 #include "xtimer.h"
-#include "msg.h"
-
 #include "st7580.h"
+#include "msg.h"
 
 /* Private define ------------------------------------------------------------*/
 #define TRIG_BUF_SIZE   21
@@ -207,7 +207,7 @@ void *tmpthread_handler(void *arg)
 {	
 	(void) 	arg;
 	
-	ST7580InterfaceInit();
+	ST7580InterfaceInit(UART_DEV(1), GPIO_PIN(PORT_A, 8), GPIO_PIN(PORT_A, 5));
 
 	printf("Writing MIB_MODEM_CONF\n");
 	ST7580MibWrite(MIB_MODEM_CONF, modem_config, sizeof(modem_config));
